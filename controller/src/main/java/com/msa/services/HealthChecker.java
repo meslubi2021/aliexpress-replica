@@ -4,7 +4,6 @@ import com.msa.deployment.Deployer;
 import com.msa.models.Machine;
 import com.msa.models.RunningInstance;
 import com.msa.models.ServiceType;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -14,7 +13,6 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 @Component
 public class HealthChecker {
@@ -36,6 +34,10 @@ public class HealthChecker {
 
     private void deployServiceToMatchedMachine(ServiceType serviceType) {
         Machine availableMachine = nodeMatcher.findNode(serviceType);
+        if (availableMachine == null) {
+            System.out.printf("No available machines to deploy %s%n", serviceType.getDirectory());
+            return;
+        }
         System.out.println("Migrate service to " + availableMachine.getIp());
         try {
             deployer.deployService(availableMachine, serviceType);
